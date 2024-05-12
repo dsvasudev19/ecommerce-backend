@@ -10,4 +10,7 @@ router.use("/review",reviewRoutes)
 const categoryRoutes=require("./categoryRoutes");
 router.use("/category",categoryRoutes)
 
+const paymentRoutes=require("./paymentRoutes")
+router.use("/payment",paymentRoutes)
+
 module.exports=router;

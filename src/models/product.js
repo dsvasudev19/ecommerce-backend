@@ -1,4 +1,5 @@
 "use strict";
+const { features } = require("process");
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Product extends Model {
@@ -9,6 +10,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.hasOne(models.Media,{
+        foreignKey:'mediable_id',
+        as:"featuredImage",
+        scope:{
+          featured:true
+        }
+      })
+      this.hasMany(models.Media,{
+        foreignKey:'mediable_id',
+        as:'galleryImages'
+      })
     }
   }
   Product.init(

@@ -28,6 +28,14 @@ module.exports = (sequelize, DataTypes) => {
         as:'featuredSubCategoryImage',
         constraints:false,
       })
+      this.belongsTo(models.Product,{
+        foreignKey:'mediable_id',
+        as:'featuredImage'
+      })
+      this.belongsTo(models.Product,{
+        foreignKey:'mediable_id',
+        as:"galleryImages"
+      })
     }
   }
   Media.init({
