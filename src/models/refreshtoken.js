@@ -37,10 +37,10 @@ module.exports = (sequelize, DataTypes) => {
     return refreshtoken.token;
   };
 
-  RefreshToken.createToken = async (user) => {
+  RefreshToken.createForgotPasswordToken = async (user) => {
     let _token = crypto.randomBytes(8).toString("hex").toUpperCase();;
     let expiryDate = now() + 1000 * 60 * 15;
-    let refreshtoken = this.create({
+    let refreshtoken =await this.create({
       userId: user.id,
       token: _token,
       expiry_date: expiryDate,
