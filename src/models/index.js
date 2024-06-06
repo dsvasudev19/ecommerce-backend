@@ -1,17 +1,17 @@
 'use strict';
-
+const mysql2=require("mysql2")
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'production';
+const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/database.js')[env];
 const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  sequelize = new Sequelize(process.env[config.use_env_variable], {...config,dialectModule:'mysql2'});
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
@@ -41,16 +41,16 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 
-(async ()=>{
-  try {
+// (async ()=>{
+//   try {
 
-    await sequelize.sync({alter:true});
-    console.log("Sync successfull...!");
+//     await sequelize.sync({alter:true});
+//     console.log("Sync successfull...!");
 
-  } catch (error) {
-    console.log(error);
-  }
-})()
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })()
 
 
 module.exports = db;
