@@ -5,7 +5,7 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV || 'production';
 const config = require(__dirname + '/../config/database.js')[env];
 const db = {};
 
@@ -41,16 +41,16 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 
-// (async ()=>{
-//   try {
+(async ()=>{
+  try {
 
-//     await sequelize.sync({alter:true});
-//     console.log("Sync successfull...!");
+    await sequelize.sync({alter:true});
+    console.log("Sync successfull...!");
 
-//   } catch (error) {
-//     console.log(error);
-//   }
-// })()
+  } catch (error) {
+    console.log(error);
+  }
+})()
 
 
 module.exports = db;
