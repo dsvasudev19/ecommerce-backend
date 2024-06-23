@@ -13,4 +13,7 @@ router.use("/category",categoryRoutes)
 const paymentRoutes=require("./paymentRoutes")
 router.use("/payment",paymentRoutes)
 
+const wishlistRoutes=require("./wishlistRoutes")
+router.use("/wishlist",wishlistRoutes)
+
 module.exports=router;

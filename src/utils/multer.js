@@ -60,6 +60,19 @@ const categoryMedia = multer.diskStorage({
     cb(null, "category_" + uniqueString);
   },
 })
+const subCategoryMedia = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = "./uploads/subCategoryMedia";
+    createDirIfNot(dir);
+    cb(null, "./uploads/subCategoryMedia")
+  },
+  filename: (req, file, cb) => {
+    const uniqueString = Date.now() + "_" + path.extname(file.originalname);
+    cb(null, "subCategory_" + uniqueString);
+  },
+})
+
+
 
 const productMedia=multer.diskStorage({
     destination:(req,file,cb)=>{
@@ -102,6 +115,7 @@ const upload = multer({storage, fileFilter});
 
 const profileUpload = multer({storage: profile_media, fileFilter, limits: {fileSize: 1024 * 1024 * 2}});
 const categoryUpload = multer({storage: categoryMedia, fileFilter, limits: {fileSize: 1024 * 1024 * 2}});
+const subCategoryUpload = multer({storage: subCategoryMedia, fileFilter, limits: {fileSize: 1024 * 1024 * 2}});
 const productUpload=multer({storage:productMedia,fileFilter,limits:{fileSize:1024*1024*2}})
 const fileUpload=multer({storage:fileData})
 
@@ -111,6 +125,7 @@ const fileUpload=multer({storage:fileData})
 module.exports = {
   upload,
   categoryUpload,
+  subCategoryUpload,
   productUpload,
   profileUpload,
   fileUpload

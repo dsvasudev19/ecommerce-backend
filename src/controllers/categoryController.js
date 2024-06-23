@@ -1,5 +1,5 @@
 
-const { Category, Media } = require("./../models")
+const { Category, Media,SubCategory } = require("./../models")
 const { sequelize } = require("./../models");
 
 
@@ -7,6 +7,10 @@ const getAll = async (req, res, next) => {
     try {
         const categories = await Category.findAll({
             include:[
+                {
+                    model:SubCategory,
+                    as:'subCategories'
+                },
                 {
                     model:Media,
                     as:'featuredImage'

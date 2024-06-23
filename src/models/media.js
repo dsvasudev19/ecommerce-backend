@@ -30,11 +30,13 @@ module.exports = (sequelize, DataTypes) => {
       })
       this.belongsTo(models.Product,{
         foreignKey:'mediable_id',
-        as:'featuredImage'
+        as:'featuredImage',
+        constraints:false
       })
       this.belongsTo(models.Product,{
         foreignKey:'mediable_id',
-        as:"galleryImages"
+        as:"galleryImages",
+        constraints:false,
       })
     }
   }

@@ -15,11 +15,13 @@ module.exports = (sequelize, DataTypes) => {
         as:"featuredImage",
         scope:{
           featured:true
-        }
+        },
+        constraints:false
       })
       this.hasMany(models.Media,{
         foreignKey:'mediable_id',
-        as:'galleryImages'
+        as:'galleryImages',
+        constraints:false,
       })
     }
   }
@@ -28,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       category: { type: DataTypes.INTEGER, allowNull: false },
       subCategory: DataTypes.INTEGER,
       name: { type: DataTypes.STRING, allowNull: false },
+      slug:{type:DataTypes.STRING,allowNull:false,defaultValue:this.name},
       status: { type: DataTypes.TINYINT, allowNull: false },
       stock: { type: DataTypes.BIGINT, allowNull: false, defaultValue: 25 },
       price: DataTypes.BIGINT,

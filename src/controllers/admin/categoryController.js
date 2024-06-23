@@ -1,5 +1,5 @@
 const { where } = require("sequelize");
-const { Category, Media } = require("./../../models")
+const { Category, Media,SubCategory } = require("./../../models")
 const { sequelize } = require("./../../models");
 const { includes } = require("lodash");
 
@@ -8,8 +8,8 @@ const getAll = async (req, res, next) => {
         const categories = await Category.findAll({
             include:[
                 {
-                    model:Media,
-                    as:'featuredImage'
+                    model:SubCategory,
+                    as:'subCategories'
                 }
             ]
         });
@@ -30,8 +30,8 @@ const getById = async (req, res, next) => {
         const category = await Category.findByPk(req.params.id,{
             include:[
                 {
-                    model:Media,
-                    as:'featuredImage'
+                    model:SubCategory,
+                    as:'subCategories'
                 }
             ]
         });
@@ -50,26 +50,23 @@ const create = async (req, res, next) => {
     const t = sequelize.transaction();
     console.log(req.file)
     try {
-        const { name } = req.body;
+        // const { name } = req.body;
+        let data=req.body;
+
         const categoryExists = await Category.findOne({
             where: {
-                name
+                name:data.name
             }
         })
+
         if (!categoryExists) {
-            const category = await Category.create(req.body);
-            const mediaData = {
-                mediable_id: category.id,
-                mediable_type: "Category",
-                url: "",
-                name: req.file.originalname,
-                file_name: req.file.filename,
-                file_type: req.file.mimetype,
-                file_size: req.file.size,
-                path: 'uploads/category',
-                featured: true,
+            
+            if(req.file){
+                data={...data,image:'/subCategoryMedia/'+req.file.filename}
             }
-            const categoryMedia = await Media.create(mediaData);
+
+            const category = await Category.create(data);
+
             if (category && categoryMedia) {
                 return res.status(200).json({ success: true, message: "Successfully Created the Category", data: category });
             } else {
@@ -84,31 +81,14 @@ const create = async (req, res, next) => {
 }
 
 const updateById = async (req, res, next) => {
-    const t=sequelize.transaction();
     try {
         const category = await Category.findByPk(req.params.id);
         if (category) {
-            await Category.update(req.body, {
-                where: {
-                    id: req.params.id
-                }
-            });
-            const mediaData = {
-                mediable_id: category.id,
-                mediable_type: "Category",
-                url: "",
-                name: req.file.originalname,
-                file_name: req.file.filename,
-                file_type: req.file.mimetype,
-                file_size: req.file.size,
-                path: 'uploads/category',
-                featured: true,
+            await category.update({...req.body,image:category.image});
+            if(req.file){
+                category.image='/subCategoryMedia/'+req.file.filename
+                await category.save()
             }
-            await Media.update(mediaData, {
-                where: {
-                    mediable_id: req.params.id
-                }
-            })
             return res.status(200).json({ success: true, message: "Successfully Updated the category" })
         } else {
             return res.status(404).json({ success: false, message: "Category Not found" });

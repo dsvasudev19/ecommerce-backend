@@ -11,28 +11,37 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.hasOne(models.Media, {
-        foreignKey: 'mediable_id',
-        as: 'featuredImage',
-        constraints:false,
-        scope: {
-          featured: true
-        }
-      })
+      // this.hasOne(models.Media, {
+      //   foreignKey: 'mediable_id',
+      //   as: 'featuredImage',
+      //   constraints:false,
+      //   scope: {
+      //     featured: true
+      //   }
+      // })
       this.hasMany(models.SubCategory,{
         foreignKey:'categoryId',
-        as:'subcategories'
+        as:'subCategories',
+        constraints:false
       })
     }
-    
-
+  
   }
   Category.init({
     name: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    status: DataTypes.TINYINT
+    status: DataTypes.TINYINT,
+    image:{
+      type:DataTypes.STRING,
+      allowNull:true,
+      get() {
+        const var1 = process.env.BASE_URL;
+        const var2 = this.getDataValue("image")
+        return var2 ? var1 + "/" + var2  : null;
+      }
+    }
   }, {
     sequelize,
     modelName: 'Category',

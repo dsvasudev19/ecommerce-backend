@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey:'mediable_id',
         as:'featuredImage',
         scope:{
-          mediable_type:'SubCategory'
+          mediable_type:'SubCategory',
+          featured:true
         },
         constraints:false
       })
@@ -28,7 +29,16 @@ module.exports = (sequelize, DataTypes) => {
   SubCategory.init({
     categoryId: DataTypes.INTEGER,
     name: DataTypes.STRING,
-    status: DataTypes.TINYINT
+    status: DataTypes.TINYINT,
+    image:{
+      type:DataTypes.STRING,
+      allowNull:true,
+      get() {
+        const var1 = process.env.BASE_URL;
+        const var2 = this.getDataValue("image")
+        return var2 ? var1 + "/" + var2  : null;
+      }
+    }
   }, {
     sequelize,
     modelName: 'SubCategory',
