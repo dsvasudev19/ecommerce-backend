@@ -62,12 +62,12 @@ const create = async (req, res, next) => {
         if (!categoryExists) {
             
             if(req.file){
-                data={...data,image:'/subCategoryMedia/'+req.file.filename}
+                data={...data,url:'/categoryMedia/'+req.file.filename}
             }
 
             const category = await Category.create(data);
 
-            if (category && categoryMedia) {
+            if (category) {
                 return res.status(200).json({ success: true, message: "Successfully Created the Category", data: category });
             } else {
                 return res.status(400).json({ success: false, message: "Error while creating the category" })
@@ -84,9 +84,9 @@ const updateById = async (req, res, next) => {
     try {
         const category = await Category.findByPk(req.params.id);
         if (category) {
-            await category.update({...req.body,image:category.image});
+            await category.update({...req.body,image:category.url});
             if(req.file){
-                category.image='/subCategoryMedia/'+req.file.filename
+                category.url='/subCategoryMedia/'+req.file.filename
                 await category.save()
             }
             return res.status(200).json({ success: true, message: "Successfully Updated the category" })

@@ -2,10 +2,10 @@ const { where } = require("sequelize");
 const { Product, Media, sequelize } = require("./../../models");
 const category = require("../../models/category");
 const { features } = require("process");
+const slugify=require("slugify")
 
 const getAll = async (req, res, next) => {
   try {
-    // TODO:Need to modify logic to get images also
     const products = await Product.findAll();
     if (products) {
       return res
@@ -28,7 +28,6 @@ const getAll = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-    // TODO:include media to get images, need to modified after writing associations
     const product = await Product.findByPk(req.params.id);
     if (product) {
       return res
@@ -60,8 +59,7 @@ const updateProductInventory = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    // Example: Update stock quantity
-    product.stock += quantity; // Adjust stock based on quantity received
+    product.stock += quantity;
     await product.save();
 
     res.status(200).json({ message: 'Product inventory updated successfully', product });
@@ -105,7 +103,7 @@ const adjustProductPricing = async (req, res) => {
     product.discount = discount;
     await product.save();
 
-    res.status(200).json({ message: 'Product pricing updated successfully', product });
+    return res.status(200).json({ message: 'Product pricing updated successfully', product });
   } catch (error) {
     res.status(500).json({ message: 'Failed to update product pricing', error: error.message });
   }
@@ -113,23 +111,14 @@ const adjustProductPricing = async (req, res) => {
 
 const create = async (req, res, next) => {
   const t = await sequelize.transaction();
+  let data=req.body;
   try {
-    const product = await Product.create(req.body, { transaction: t });
-    const mediaData = {
-      mediable_id: product.id,
-      mediable_type: "Product",
-      url: "",
-      name: req.file.originalname,
-      file_name: req.file.filename,
-      file_type: req.file.mimetype,
-      file_size: req.file.size,
-      path: "/uploads/productMedia",
-      featured: true,
-    };
-
-    const featuredImage = Media.create(mediaData, { transaction: t });
-
-    if (product && featuredImage) {
+    if(req.file){
+      data={...data,url:'/productMedia/'+req.file.filename}
+    }
+    const product = await Product.create({...data,slug:slugify(req.body.name)}, { transaction: t });
+    if (product) {
+      t.commit()
       return res
         .status(200)
         .json({
@@ -143,6 +132,7 @@ const create = async (req, res, next) => {
         .json({ success: false, message: "Error while creating the product" });
     }
   } catch (error) {
+    t.rollback();
     console.log(error);
     next(error);
   }
@@ -152,27 +142,10 @@ const update = async (req, res, next) => {
   try {
     const product = await Product.findByPk(req.params.id);
     if (product) {
-      await Product.Update(req.body, {
-        where: {
-          id: req.params.id,
-        },
-      });
+      await product.update({...req.body,slug:slugify(req.body.name),url:product.url});
       if (req.file) {
-        const mediaData = {
-          mediable_id: product.id,
-          mediable_type: "Product",
-          url: "",
-          name: req.file.originalname,
-          file_name: req.file.filename,
-          file_type: req.file.mimetype,
-          file_size: req.file.size,
-          path: "/uploads/productMedia",
-          featured: true,
-        };
-        const featuredImage = Media.Update(mediaData, {
-          where: { mediable_id: product.id },
-          transaction: t,
-        });
+        product.url='/productMedia/'+req.file.filename;
+        await product.save();
         return res
         .status(200)
         .json({ success: true, message: "Successfully Updated the Product" });
