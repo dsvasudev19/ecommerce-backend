@@ -10,19 +10,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasOne(models.Media,{
-        foreignKey:'mediable_id',
-        as:"featuredImage",
-        scope:{
-          featured:true
+      this.hasOne(models.Media, {
+        foreignKey: "mediable_id",
+        as: "featuredImage",
+        scope: {
+          featured: true,
         },
-        constraints:false
-      })
-      this.hasMany(models.Media,{
-        foreignKey:'mediable_id',
-        as:'galleryImages',
-        constraints:false,
-      })
+        constraints: false,
+      });
+      this.hasMany(models.Media, {
+        foreignKey: "mediable_id",
+        as: "galleryImages",
+        constraints: false,
+      });
+      this.hasMany(models.OrderItem, { foreignKey: "productId" });
     }
   }
   Product.init(
@@ -30,7 +31,11 @@ module.exports = (sequelize, DataTypes) => {
       category: { type: DataTypes.INTEGER, allowNull: false },
       subCategory: DataTypes.INTEGER,
       name: { type: DataTypes.STRING, allowNull: false },
-      slug:{type:DataTypes.STRING,allowNull:false,defaultValue:this.name},
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: this.name,
+      },
       status: { type: DataTypes.TINYINT, allowNull: false },
       stock: { type: DataTypes.BIGINT, allowNull: false, defaultValue: 25 },
       price: DataTypes.BIGINT,
@@ -39,8 +44,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Product",
-      tableName:'products',
-      paranoid:true
+      tableName: "products",
+      paranoid: true,
     }
   );
   return Product;
