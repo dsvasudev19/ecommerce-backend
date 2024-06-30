@@ -49,6 +49,68 @@ const getById = async (req, res, next) => {
   }
 };
 
+const updateProductInventory = async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  try {
+    const product = await Product.findByPk(id);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Example: Update stock quantity
+    product.stock += quantity; // Adjust stock based on quantity received
+    await product.save();
+
+    res.status(200).json({ message: 'Product inventory updated successfully', product });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update product inventory', error: error.message });
+  }
+};
+
+const setProductStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const product = await Product.findByPk(id);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    product.status = status;
+    await product.save();
+
+    res.status(200).json({ message: 'Product status updated successfully', product });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update product status', error: error.message });
+  }
+};
+
+const adjustProductPricing = async (req, res) => {
+  const { id } = req.params;
+  const { price, discount } = req.body;
+
+  try {
+    const product = await Product.findByPk(id);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    product.price = price;
+    product.discount = discount;
+    await product.save();
+
+    res.status(200).json({ message: 'Product pricing updated successfully', product });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update product pricing', error: error.message });
+  }
+};
+
 const create = async (req, res, next) => {
   const t = await sequelize.transaction();
   try {
@@ -178,4 +240,7 @@ module.exports = {
   update,
   deleteProduct,
   getAllSimilarCategoryProducts,
+  adjustProductPricing,
+  updateProductInventory,
+  setProductStatus
 };

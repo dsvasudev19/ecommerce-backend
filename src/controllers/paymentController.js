@@ -62,8 +62,40 @@ const validatePayment = async (req, res, next) => {
     }
   };
   
+  const refundInitiate = async (req, res, next) => {
+    try {
+      const { paymentId } = req.body;
+      const transaction = await Transaction.findOne({ where: { paymentId } });
+  
+      if (!transaction) {
+        return res.status(404).json({ success: false, message: "Transaction not found" });
+      }
+  
+      instance.payments.refund(paymentId, { amount: transaction.amount * 100, speed: 'normal' }, async (err, refund) => {
+        if (!err) {
+          await transaction.update({ status: 'refunded' });
+  
+          return res.status(200).json({
+            success: true,
+            message: "Refund initiated successfully",
+            data: refund
+          });
+        } else {
+          return res.status(400).json({
+            success: false,
+            message: "Error while initiating refund",
+            error: err.message
+          });
+        }
+      });
+    } catch (error) {
+      console.log(error.message);
+      next(error);
+    }
+  };
 
 module.exports={
     createOrder,
-    validatePayment
+    validatePayment,
+    refundInitiate
 }
