@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -11,29 +9,38 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasOne(models.Media,{
-        foreignKey:"mediable_id",
-        as:'profile',
-        scope:{
-          mediable_type:"Profile"
+      this.hasOne(models.Media, {
+        foreignKey: "mediable_id",
+        as: "profile",
+        scope: {
+          mediable_type: "Profile",
         },
-        constraints:false
-      })
+        constraints: false,
+      });
+      this.hasMany(models.Order, { foreignKey: "userId" });
 
+      // User has many Addresses
+      this.hasMany(models.Address, { foreignKey: "userId" });
+
+      // User has many Transactions
+      this.hasMany(models.Transaction, { foreignKey: "userId" });
     }
   }
-  User.init({
-    first_name: DataTypes.STRING,
-    last_name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    dob: DataTypes.DATEONLY,
-    phone: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'User',
-    tableName:'users',
-    paranoid:true
-  });
+  User.init(
+    {
+      first_name: DataTypes.STRING,
+      last_name: DataTypes.STRING,
+      email: DataTypes.STRING,
+      password: DataTypes.STRING,
+      dob: DataTypes.DATEONLY,
+      phone: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: "User",
+      tableName: "users",
+      paranoid: true,
+    }
+  );
   return User;
 };

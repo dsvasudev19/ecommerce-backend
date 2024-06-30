@@ -1,4 +1,4 @@
-const { User, RefreshToken } = require("./../models");
+const { User, RefreshToken,Staff } = require("./../models");
 
 const verify = async (req, res, next) => {
   try {
@@ -15,7 +15,7 @@ const verify = async (req, res, next) => {
         .json({ success: false, message: "Invalid Login Token" });
     }
     // TODO: Modify this for admin
-    const user = await User.findByPk(id);//replace User with Staff
+    const user = await Staff.findByPk(id);//replace User with Staff
     if (!user) {
       return res
         .status(401)
