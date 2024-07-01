@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Staff, RefreshToken } = require("./../models");
+const { Staff, RefreshToken } = require("./../../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -20,7 +20,7 @@ const login = async (req, res, next) => {
       } else {
         const jwttoken = jwt.sign(
           { id: user.id, email: user.email },
-          "abcdefgh"
+          "adminsecret"
         );
         const refreshtoken = RefreshToken.create(user);
         res.cookie("token", jwttoken);
@@ -54,7 +54,7 @@ const signup=async(req,res,next)=>{
         if(userExists){
             return res.status(400).json({success:false,message:"Already a User Exists with the given mail or Password"})
         }else{
-            const user=await User.create(req.body);
+            const user=await Staff.create(req.body);
             if(user){
                 return res.status(200).json({success:true,message:"User SignUp Successfull.....!"})
             }else{

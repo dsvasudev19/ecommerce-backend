@@ -14,19 +14,23 @@ module.exports = (sequelize, DataTypes) => {
       // Order has many OrderItems
       this.hasMany(models.OrderItem, { foreignKey: "orderId" });
 
-      // Order has one Payment (Transaction)
-      this.hasOne(models.Transaction, { foreignKey: "orderId" });
 
       // Order has one ShippingAddress
       this.belongsTo(models.Address, {
         as: "ShippingAddress",
-        foreignKey: "shippingAddressId",
+        foreignKey: "addressId",
+        scope:{
+          type:"Shipping"
+        }
       });
 
       // Order has one BillingAddress (if applicable)
       Order.belongsTo(models.Address, {
         as: "BillingAddress",
-        foreignKey: "billingAddressId",
+        foreignKey: "addressId",
+        scope:{
+          type:"Billing"
+        }
       });
     }
   }

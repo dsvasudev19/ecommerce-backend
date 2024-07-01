@@ -30,12 +30,16 @@ module.exports = (sequelize, DataTypes) => {
     categoryId: DataTypes.INTEGER,
     name: DataTypes.STRING,
     status: DataTypes.TINYINT,
+    url:{
+      type:DataTypes.STRING,
+      allowNull:true,
+    },
     image:{
       type:DataTypes.STRING,
       allowNull:true,
       get() {
         const var1 = process.env.BASE_URL;
-        const var2 = this.getDataValue("image")
+        const var2 = this.getDataValue("url")
         return var2 ? var1 + "/" + var2  : null;
       }
     }

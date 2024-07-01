@@ -2,14 +2,7 @@ const { SubCategory, Category, Media } = require("./../../models");
 
 const getAll = async (req, res, next) => {
   try {
-    const subcategories = await SubCategory.findAll({
-      include: [
-        {
-          model: Media,
-          as: "featuredImage",
-        },
-      ],
-    });
+    const subcategories = await SubCategory.findAll();
     return res.status(200).json({
       success: true,
       message: "Successfully fetched all Sub Categories",
@@ -28,14 +21,7 @@ const getAll = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const subcategory = await SubCategory.findByPk(id, {
-      include: [
-        {
-          model: Media,
-          as: "featuredImage",
-        },
-      ],
-    });
+    const subcategory = await SubCategory.findByPk(id);
 
     if (!subcategory) {
       return res.status(404).json({ message: "SubCategory not found" });
@@ -69,7 +55,7 @@ const create = async (req, res,next) => {
     }
     
     if (req.file) {
-        data={...data,image:'/subCategoryMedia/'+req.file.filename}
+        data={...data,url:'/subCategoryMedia/'+req.file.filename}
     }
     const subcategory = await SubCategory.create(data);
     return res.status(200).json({
@@ -93,7 +79,11 @@ const update = async (req, res,next) => {
       return res.status(404).json({ message: "SubCategory not found" });
     }
 
-    await subcategory.update({ categoryId, name, status });
+    await subcategory.update({ categoryId, name, status,url:subcategory.url });
+    if(req.file){
+      subcategory.url='/subCategoryMedia/'+req.file.filename
+      await subcategory.save()
+    }
     return res.status(200).json({
       success: true,
       message: "Successfully updated the sub-category",

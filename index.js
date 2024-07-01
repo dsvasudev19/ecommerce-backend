@@ -25,6 +25,7 @@ var corsOptions = {
     "http://localhost:3011",
     "http://localhost:3000",
     "http://localhost:5173",
+    "*"
 
   ],
   credentials: true,
@@ -48,10 +49,10 @@ const options = {
     info: {
       title: "Your API",
       version: "1.0.0",
-      description: "Documentation of Spack Digi API",
+      description: "Documentation of Ecommerce API",
       contact: {
-        name: "Spack Digi Developers",
-        email: "developer@spackdigi.com",
+        name: "Interactweb Agency",
+        email: "developer@interactweb.agency",
       },
     },
     servers: [

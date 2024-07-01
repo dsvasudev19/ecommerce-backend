@@ -24,6 +24,7 @@
     "razorpay": "^2.9.3",
     "sequelize": "^6.37.3",
     "sequelize-cli": "^6.6.2",
+    "slugify": "^1.6.6",
     "stripe": "^15.4.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",

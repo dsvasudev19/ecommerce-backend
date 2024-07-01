@@ -16,4 +16,7 @@ router.use("/payment",paymentRoutes)
 const wishlistRoutes=require("./wishlistRoutes")
 router.use("/wishlist",wishlistRoutes)
 
+const orderRoutes=require("./orderRoutes")
+router.use("/orders",orderRoutes)
+
 module.exports=router;

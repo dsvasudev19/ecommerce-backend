@@ -10,14 +10,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasOne(models.Media, {
-        foreignKey: "mediable_id",
-        as: "featuredImage",
-        scope: {
-          featured: true,
-        },
-        constraints: false,
-      });
       this.hasMany(models.Media, {
         foreignKey: "mediable_id",
         as: "galleryImages",
@@ -40,6 +32,19 @@ module.exports = (sequelize, DataTypes) => {
       stock: { type: DataTypes.BIGINT, allowNull: false, defaultValue: 25 },
       price: DataTypes.BIGINT,
       discount: { type: DataTypes.BIGINT, allowNull: false, defaultValue: 12 },
+      url:{
+      type:DataTypes.STRING,
+      allowNull:true,
+    },
+    image:{
+      type:DataTypes.STRING,
+      allowNull:true,
+      get() {
+        const var1 = process.env.BASE_URL;
+        const var2 = this.getDataValue("url")
+        return var2 ? var1 + "/" + var2  : null;
+      }
+    }
     },
     {
       sequelize,

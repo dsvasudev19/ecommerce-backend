@@ -1,84 +1,194 @@
-const {Staff}=require("./../../models")
+const { Staff, Designation } = require("./../../models");
+const bcrypt = require("bcrypt");
 
-const getAll=async(req,res,next)=>{
-    try {
-        const staff=await Staff.findAll();
-        if(staff){
-            return res.status(200).json({success:true,message:"Successfully fetched the Staff",data:staff})
-        }else{
-            return res.status(200).json({success:false,message:"No Staff Found",data:[]})
-        }
-    } catch (error) {
-        console.log(error);
-        next(error)
+// Get all staff members
+const getAllStaff = async (req, res, next) => {
+  try {
+    const staff = await Staff.findAll({
+      include: [{ model: Designation, as: "designation" }],
+    });
+    res.status(200).json({ success: true, data: staff });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+// Get a single staff member by ID
+const getStaffById = async (req, res, next) => {
+  try {
+    const staff = await Staff.findByPk(req.params.id, {
+      include: [{ model: Designation, as: "designation" }],
+    });
+
+    if (!staff) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Staff member not found" });
     }
-}
 
-const getById=async(req,res,next)=>{
-    try {
-        const staff=await Staff.findByPk(req.params.id);
-        if(staff){
-            return res.status(200).json({success:true,message:"Successfully fetched the Staff",data:staff})
-        }else{
-            return res.status(200).json({success:false,message:"No Staff Found",data:{}})
-        }
-    } catch (error) {
-        console.log(error);
-        next(error)
+    res.status(200).json({ success: true, data: staff });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+// Create a new staff member
+const createStaff = async (req, res, next) => {
+  try {
+    const {
+      first_name,
+      last_name,
+      email,
+      phone,
+      username,
+      dob,
+      doj,
+      password,
+    } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newStaff = await Staff.create({
+      first_name,
+      last_name,
+      email,
+      phone,
+      username,
+      dob,
+      doj,
+      password: bcrypt.hashSync(password, 10),
+    });
+
+    res
+      .status(201)
+      .json({
+        success: true,
+        message: "Staff member created successfully",
+        data: newStaff,
+      });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+// Update an existing staff member
+const updateStaff = async (req, res, next) => {
+  try {
+    const staff = await Staff.findByPk(req.params.id);
+    if (!staff) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No Staff found with given id" });
     }
-}
+    const {
+      first_name,
+      last_name,
+      email,
+      phone,
+      username,
+      dob,
+      doj,
+      password,
+    } = req.body;
+    const hashedPassword = password
+      ? await bcrypt.hashSync(password, 10)
+      : undefined;
 
-const create=async(req,res,next)=>{
-    try {
-        const staff=await Staff.findAll({
-            where:{
-                [Op.or]:{
-                    email:req.body.email,
-                    phone:req.body.phone
-                }
-            }
-        })
-    } catch (error) {
-        console.log(error);
+    const updatedFields = {
+      first_name,
+      last_name,
+      email,
+      phone,
+      username,
+      dob,
+      doj,
+    };
+
+    if (hashedPassword) {
+      updatedFields.password = hashedPassword;
     }
-}
 
-const update=async(req,res,next)=>{
-    try {
-        const staff=await Staff.findByPk(req.params.id);
-        if(staff){
-            await Staff.Update(req.body,{
-                where:{
-                    id:req.params.id
-                }
-            })
-            return res.status(200).json({success:true,message:"Successfully Updated the Staff Details",data:staff})
-        }else{
-            return res.status(404).json({success:false,message:"Staff not found with the given id!"})
-        }
-    } catch (error) {
-        console.log(error);
+    const updatedStaff = await staff.update(updatedFields);
+
+    if (!updatedStaff[0]) {
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "Staff member not found or no changes made",
+        });
     }
-}
 
-const deleteStaff=async(req,res,next)=>{
-    try {
-        const staffExists=await Staff.findByPk(req.params.id);
-        if(staffExists){
-            staffExists.destroy();
-             return res.status(200).json({success:true,message:"Successfully Deleted the Staff."})
-        }else{
-            return res.status(200).json({success:false,message:"Staff Not found with the given id!"})
-        }
-    } catch (error) {
-        console.log(error)
+    res
+      .status(200)
+      .json({ success: true, message: "Staff member updated successfully" });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+// Delete a staff member
+const deleteStaff = async (req, res, next) => {
+  try {
+    const staff = await Staff.findByPk(req.params.id);
+    if (!staff) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No Staff found with given id" });
     }
-}
 
-module.exports={
-    getAll,
-    getById,
-    create,
-    update,
-    deleteStaff
-}
+    const deleted = await staff.destroy();
+
+    if (!deleted) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Staff member not found" });
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "Staff member deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+// Analytics: Total number of staff members
+const getTotalStaffCount = async (req, res, next) => {
+  try {
+    const totalStaff = await Staff.count();
+    res.status(200).json({ success: true, data: totalStaff });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+// Analytics: Staff members by designation
+const getStaffByDesignation = async (req, res, next) => {
+  try {
+    const staffByDesignation = await Designation.findAll({
+      include: [{ model: Staff, as: "staff" }],
+      group: ["Designation.name"],
+    });
+
+    res.status(200).json({ success: true, data: staffByDesignation });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+module.exports = {
+  getAllStaff,
+  getStaffById,
+  createStaff,
+  updateStaff,
+  deleteStaff,
+  getTotalStaffCount,
+  getStaffByDesignation,
+};

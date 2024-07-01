@@ -1,4 +1,4 @@
-const { Order, OrderItem, Product, Address, Transaction, sequelize } = require('../models');
+const { Order, OrderItem, Product, Address, Transaction, sequelize } = require('./../../models');
 const { Op } = require('sequelize');
 
 // Helper function to calculate total sales amount
