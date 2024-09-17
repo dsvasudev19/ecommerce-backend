@@ -20,6 +20,9 @@ module.exports = (sequelize, DataTypes) => {
   }
   Product.init(
     {
+      storeId:{
+        type:DataTypes.INTEGER,allowNull:false
+      },
       category: { type: DataTypes.INTEGER, allowNull: false },
       subCategory: DataTypes.INTEGER,
       name: { type: DataTypes.STRING, allowNull: false },

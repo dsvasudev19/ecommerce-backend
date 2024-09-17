@@ -49,8 +49,24 @@ const getSimilarCategoryProducts=async(req,res,next)=>{
     }
 }
 
+
+const getAllProductsOfTheStore = async (req, res, next) => {
+    try {
+        const products = await Product.findAll({
+            where: {
+                storeId: req.params.id
+            }
+        })
+        return res.status(200).json({message: "Successfully fetched the products", data: products})
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+}
+
 module.exports={
     getAll,
     getById,
-    getSimilarCategoryProducts
+    getSimilarCategoryProducts,
+    getAllProductsOfTheStore
 }

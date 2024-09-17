@@ -21,7 +21,7 @@ router.delete("/:id",productController.deleteProduct)
 router.get("/category/:categoryId",productController.getAllSimilarCategoryProducts);
 
 
-
+router.get("/store/:storeId",productController.getAllSimilarCategoryProducts)
 
 
 module.exports=router;
