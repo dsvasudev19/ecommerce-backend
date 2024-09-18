@@ -1,5 +1,5 @@
 const { Order, OrderItem, Product, Address, Transaction, sequelize } = require('./../models');
-const { refundInitiate } = require('../controllers/PaymentController');
+const { refundInitiate } = require('./paymentController');
 
 const createOrder = async (req, res) => {
     const { items, address, payment } = req.body;
